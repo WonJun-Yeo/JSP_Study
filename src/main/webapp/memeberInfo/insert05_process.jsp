@@ -11,7 +11,7 @@
 	<%@ include file = "dbconn_oracle.jsp"%>
 	
 	<%
-	request.setCharacterEncoding("UTF-8");				// 폼에서 넘긴 한글처리하기 위함
+	request.setCharacterEncoding("UTF-8");					// 폼에서 넘긴 한글처리하기 위함
 	
 	// form에서 넘긴 name값을 받아오는 request.getParameter
 	String id = request.getParameter("id");
@@ -19,13 +19,20 @@
 	String name = request.getParameter("name");
 	String email = request.getParameter("email");
 	
-	Statement stmt = null;								// Statement 객체 : SQL 쿼리 구문을 담아서 실행하는 객체
+	PreparedStatement pstmt = null;
 	
 	try {
-		String sql = "INSERT INTO mbTbl(idx, id, pass, name, email) VALUES (seq_mbTbl_idx.nextval, '" + id + "', '" + passwd  + "', '" + name + "',  '" + email + "')";						// 문자열은 따옴표처리를 쥬의해야한다.
+		String sql = "INSERT INTO mbTbl(idx, id, pass, name, email) VALUES (seq_mbTbl_idx.nextval, ?, ?, ?, ?)";						// 문자열은 따옴표처리를 쥬의해야한다.
 		
-		stmt = conn.createStatement();					// connection 객체를 통해서 statement 객체 활성화
-		stmt.executeUpdate(sql);						// statement 객체의 executeUpdate() 함수를  통해 sql을 실행한다.
+		pstmt = conn.prepareStatement(sql);					// Preparedstatement는 객체 활성화시에 sql변수를 넣는다.
+		
+		// ? 인자에 값을 받을 변수 할당
+		pstmt.setString(1, id);
+		pstmt.setString(2, passwd);
+		pstmt.setString(3, name);
+		pstmt.setString(4, email);
+		
+		pstmt.executeUpdate();						// PreparedStatement 객체의 executeUpdate() 함수를 통해 sql을 실행한다. sql 변수를 넣지 않는다.
 		
 		/* SQL 실행법 2가지
 			stmt.executeUpdate(sql); : DML(insert, update, delete) 구문이 온다.
@@ -42,8 +49,8 @@
 		out.println("mbTbl 테이블에 삽입을 실패했습니다.");
 		out.println(e.getMessage());
 	} finally {											// 사용한 객체는 모두 종료해주어야 한다.
-		if (stmt != null) {								// stmt 객체 종료 선언
-			stmt.close();
+		if (pstmt != null) {								// stmt 객체 종료 선언
+			pstmt.close();
 		}
 		if (conn != null) {								// conn 객체 종료 선언
 			conn.close();

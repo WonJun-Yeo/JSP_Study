@@ -7,7 +7,7 @@
 <title>Insert</title>
 </head>
 <body>
-	<form method = "post" action = "insert01_process.jsp">
+	<form method = "post" action = "insert05_process.jsp">
 		<p>아이디 : <input type = "text" name = "id"></p>
 		<p>패스워드 : <input type = "password" name = "passwd"></p>
 		<p>이름 : <input type = "text" name = "name"></p>

@@ -4,10 +4,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Update</title>
 </head>
 <body>
-	<form method = "post" action = "insert01_process.jsp">
+	<form method = "POST" action = "update05_process.jsp">
 		<p> 사원번호 : <input type = "text" name = "eno"></p>
 		<p> 이름 : <input type = "text" name = "ename"></p>
 		<p> 직책 : <input type = "text" name = "job"></p>
