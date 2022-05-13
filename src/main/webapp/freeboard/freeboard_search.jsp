@@ -26,8 +26,8 @@ request.setCharacterEncoding("UTF-8");
 						<SELECT name=stype>
 							<%
 							String cond = null;
-							int what = 1;
-							String val = null;
+							int what = 1;					// stype 에서 변긴값을 저장하는 변수
+							String val = null;				// 검색어 값을 저장하는 변수
 							if (request.getParameter("stype") != null) {
 								what = Integer.parseInt(request.getParameter("stype"));
 								val = request.getParameter("sval");
@@ -110,10 +110,10 @@ request.setCharacterEncoding("UTF-8");
 			int where = 1;
 
 			int totalgroup = 0;
-			int maxpages = 2;
+			int maxpages = 2;									// 페이지 그룹핑할 때 표시할 게시글 갯수
 			int startpage = 1;
 			int endpage = startpage + maxpages - 1;
-			int wheregroup = 1;
+			int wheregroup = 1;									// 현재 위치한 페이지의 그룹
 
 			if (request.getParameter("go") != null) {
 				where = Integer.parseInt(request.getParameter("go"));

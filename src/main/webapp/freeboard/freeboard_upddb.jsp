@@ -25,6 +25,8 @@ request.setCharacterEncoding("UTF-8");
 
 	if (cont.length() == 1)
 		cont = cont + " ";
+	// textarea 내에 '(작은따옴표)가 들어가면 DB에 insert, update 시 문제가 발생된다.
+	// insert 될 때, String 의 경우 '' 작은따옴표로 묶이게 되는데 그 안에 또 ' 작은따옴표가 있다면 에러가 발생할 수 있다.
 	while ((pos = cont.indexOf("\'", pos)) != -1) {
 		String left = cont.substring(0, pos);
 		String right = cont.substring(pos, cont.length());

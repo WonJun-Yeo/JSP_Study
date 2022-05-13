@@ -95,5 +95,18 @@
 	%>
 	
 	<jsp:forward page = "freeboard_list.jsp" />
+	
+	<!-- 페이지를 이동
+	jsp:forwrad
+		서버단에서 페이지를 이동
+		클라이언트의 URL이 이동하는 페이지 URL로 바뀌지 않는다.
+		list.jsp 로 이동하더라도 save.jsp URL로 남아있음
+	response.sendRedirect
+		클라이언트에서 페이지를 재요청하여 이동
+		클라이언트의 URL이 이동하는 페이지로 URL 정보가 바뀐다.
+	
+	
+	 -->
+	
 </body>
 </html>
