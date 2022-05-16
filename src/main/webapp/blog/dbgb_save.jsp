@@ -1,112 +1,66 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import = "java.sql.*, java.text.*" %>
-<!-- 한글 처리 -->
+<%@ page import = "java.sql.*" %>
+<!-- form에서 넘겨주는 한글 처리 -->
 <% request.setCharacterEncoding("UTF-8"); %>
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Form의 값을 받아서 DB에 값을 Create</title>
+<title>form에서 넘겨 받은 값을 DB에 insert하는 페이지</title>
 </head>
 <body>
-	<%@ include file = "dbconn_oracle.jsp"%>
-	<%
-	// form에서 받은 값을 변수로 저장
-	String na = request.getParameter("name");
-	String em = request.getParameter("email");
-	String sub = request.getParameter("subject");
-	String cont = request.getParameter("content");
-	String pw = request.getParameter("password");
+<!-- Connection 객체 : commit이 자동으로 내장되어 있음-->
+<%@ include file = "db_conn_oracle.jsp" %>
+<%
+String na = request.getParameter("name");
+String em = request.getParameter("email");
+String sub = request.getParameter("subject");
+String cont = request.getParameter("content");
+// 오늘 날짜를 저장, 현재 시스템의 Locale = 한국
+String ymd = (new java.util.Date()).toLocaleString();
+
+/* 폼에서 넘긴 변수가 잘 넘어오는지 확인
+out.println(na + "<br>");
+out.println(em + "<br>");
+out.println(sub + "<br>");
+out.println(cont + "<br>");
+out.println(ymd);
+*/
+
+String sql = null;
+Statement st = null;
+// 값이 잘 입력되었는지 확인하는 변수
+// 정상적으로 record를 처리했다면 0이 아니라 처리 레코드 수로 바뀔 것
+int cnt = 0;
+
+try {
+	sql = "INSERT INTO guestboard2 (name, email, inputdate, subject, content) ";
+	sql = sql + "VALUES ('" + na + "', '" + em + "', '" + ymd + "', '" + sub + "', '" + cont + "')";
 	
-	// DB id컬럼에 저장할 값
-	int id = 1;
+	st = conn.createStatement();				// Statement 객체 활성화 (XE, "hr2", "1234")
+	cnt = st.executeUpdate(sql);				// Statement 객체 실행 (insert, update, delete문), 반환값 : 처리레코드의 수
 	
-	int pos = 0;
-	if (cont.length() == 1) {
-		cont = cont + " ";
+	/*
+	if (cnt > 0) {
+		out.println("DB에 값이 입력되었습니다.");
+	} else {
+		out.println("값 입력에 실패하였습니다.");
 	}
+	*/
 	
-	// content (Text Area)에 엔터(줄바꿈)를 처리 : Oracle DB 저장 시, 엔터의 값을 바꿔 저장
-	while ((pos = cont.indexOf("\'", pos)) != -1) {
-		String left = cont.substring (0,pos);
-		String right = cont.substring (pos,cont.length());
-		cont = left + "\'" + right;
-		pos += 2;
+} catch(Exception e) {
+	out.println(e.getMessage());
+} finally {
+	if (st != null) {
+		st.close();
 	}
-	
-	// 오늘 날짜 처리 함수
-	java.util.Date yymmdd = new java.util.Date();
-	SimpleDateFormat myformat = new SimpleDateFormat("yy-MM-d h:mm a");
-	String ymd = myformat.format(yymmdd);
-	
-	String sql = null;
-	Statement st = null;
-	ResultSet rs = null;
-	
-	int cnt = 0;				// insert 잘되었는지 확인하는 변수
-	
-	try {
-		// 값을 저장하기 전에 최신 글번호(max(id))를 가져와 + 1을 적용한다.
-		sql = "SELECT max(id) FROM freeboard";
-		
-		st = conn.createStatement();				// Connection 객체는 auto commit(DML에)이 적용된다.
-		rs = st.executeQuery(sql);
-		if (!(rs.next())) {							// rs의 값이 비어있을 때, 즉 글이 하나도 없을 때
-			id = 1;
-		} else {
-			id = rs.getInt(1) + 1;					// 괄호안 1은 첫번째 값을 의미한다.
-		}
-		rs.close();
-		
-		sql = "INSERT INTO freeboard (id, name, password, email, subject,";	
-		sql = sql + "content, inputdate, masterid, readcount, replaynum, step)";
-		sql = sql + " VALUES (" + id + ", '" + na + "', '" + pw + "', '" + em + "', ";
-		sql = sql + "'" + sub + "', '" + cont + "', '" + ymd + "', " + id + ", ";
-		sql = sql + "0, 0, 0)";
-		
-		cnt = st.executeUpdate(sql);				// cnt > 0 면 insert 성공, executeUpdate()는 반영된 레코드 수를 반환한다. delete, drop은 -1 반환
-		
-		if (cnt > 0) {
-			out.println("데이터가 성공적으로 입력되었습니다.");
-		} else {
-			out.println("데이터가 입력에 실패하였습니다.");
-		}
-		
-		
-		
-		// sql 확인
-		// out.println(sql);
-	} catch (Exception e) {
-		out.println(e.getMessage());
-	} finally {
-		if (st != null) {
-			st.close();
-		}
-		if (rs != null) {
-			rs.close();
-		}
-		if (conn != null) {
-			conn.close();
-		}
+	if (conn != null) {
+		conn.close();
 	}
-	
-	%>
-	
-	<jsp:forward page = "freeboard_list.jsp" />
-	
-	<!-- 페이지를 이동
-	jsp:forwrad
-		서버단에서 페이지를 이동
-		클라이언트의 URL이 이동하는 페이지 URL로 바뀌지 않는다.
-		list.jsp 로 이동하더라도 save.jsp URL로 남아있음
-	response.sendRedirect
-		클라이언트에서 페이지를 재요청하여 이동
-		클라이언트의 URL이 이동하는 페이지로 URL 정보가 바뀐다.
-	
-	
-	 -->
-	
+}
+
+%>
+<jsp:forward page = "dbgb_show.jsp" />
 </body>
 </html>
