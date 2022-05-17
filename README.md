@@ -1,2 +1,2 @@
 # JSP_Study
-JSP 시작
+MVC1
