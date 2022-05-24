@@ -25,9 +25,6 @@
 		<td width="130" align="center">침낭</td>
 		<td width="130" align="center">테이블</td>
 		<td width="130" align="center">화롯대</td>
-		<jsp:include page="Myfile.jsp">
-			<jsp:param value="안녕하세요" name="hello"></jsp:param>
-		</jsp:include>
 		
 		<jsp:forward page="Mtfile.jsp">
 			<jsp:pram value="안녕" name="hi"></jsp:pram>
